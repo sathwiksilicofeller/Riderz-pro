@@ -1,5 +1,52 @@
 import type { NextConfig } from "next";
 
+const isProd = process.env.NODE_ENV === "production";
+
+/** The scheme + host of a tile URL template such as https://{s}.tile.example.com/{z}/{x}/{y}.png. */
+function tilesOrigin(template: string | undefined): string | null {
+  const m = /^(https?:\/\/[^/]+)/i.exec((template ?? "").trim().replace(/\{s\}/g, "*"));
+  return m ? m[1] : null;
+}
+
+/**
+ * Content-Security-Policy, sent as Report-Only: browsers log what it would block (DevTools console)
+ * but block nothing, so it can't break the site. Test every page with the frontend team (checkout
+ * with Razorpay, rider map, /locations maps, admin document viewer, shop-screen mic), then switch
+ * the header name to "Content-Security-Policy" to enforce it (docs/DEPLOY.md, "Security headers").
+ * Built from what the app loads:
+ * - scripts: Next's inline bootstrap and theme script ('unsafe-inline': no nonces), Razorpay
+ *   checkout.js (src/lib/payments/checkout.ts); dev only: 'unsafe-eval' for hot reload.
+ * - images: next/image is served from /_next/image ('self'); the remotePatterns hosts
+ *   (REMOTE_IMAGES); data:/blob: for placeholders and previews; map tiles (NEXT_PUBLIC_MAP_TILES_URL, default OpenStreetMap).
+ * - frames: Razorpay's payment window; Google Maps embeds on /locations.
+ * - fonts: next/font self-hosts Google fonts ('self').
+ * Routing and geocoding (OSRM, Nominatim) and every other API run on the server, so they're not here.
+ */
+const REMOTE_IMAGES: { protocol: "https"; hostname: string }[] = [
+  { protocol: "https", hostname: "images.unsplash.com" },
+  // Authentic RECOIL product photography, served from the manufacturer's
+  // own media library and its official storefront CDN.
+  { protocol: "https", hostname: "recoilaudio.com" },
+  { protocol: "https", hostname: "cdn.shopify.com" },
+];
+const IMAGE_HOSTS = REMOTE_IMAGES.map((p) => `${p.protocol}://${p.hostname}`);
+const TILES = tilesOrigin(process.env.NEXT_PUBLIC_MAP_TILES_URL) ?? "https://tile.openstreetmap.org";
+const CSP = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline' https://checkout.razorpay.com${isProd ? "" : " 'unsafe-eval'"}`,
+  "style-src 'self' 'unsafe-inline'",
+  `img-src 'self' data: blob: ${[...IMAGE_HOSTS, TILES, "https://*.razorpay.com"].join(" ")}`,
+  "font-src 'self' data:",
+  `connect-src 'self' https://api.razorpay.com https://lumberjack.razorpay.com${isProd ? "" : " ws: wss:"}`,
+  "frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://maps.google.com https://www.google.com",
+  "media-src 'self' blob:",
+  "worker-src 'self' blob:",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'self'",
+].join("; ");
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
@@ -11,13 +58,7 @@ const nextConfig: NextConfig = {
     // into AVIF/WebP at the exact sizes the layout needs.
     formats: ["image/avif", "image/webp"],
     qualities: [60, 68, 72, 75],
-    remotePatterns: [
-      { protocol: "https", hostname: "images.unsplash.com" },
-      // Authentic RECOIL product photography, served from the manufacturer's
-      // own media library and its official storefront CDN.
-      { protocol: "https", hostname: "recoilaudio.com" },
-      { protocol: "https", hostname: "cdn.shopify.com" },
-    ],
+    remotePatterns: REMOTE_IMAGES,
     deviceSizes: [360, 420, 640, 750, 828, 1080, 1200, 1600, 1920],
     imageSizes: [64, 96, 128, 200, 256, 320, 420],
     minimumCacheTTL: 60 * 60 * 24 * 30,
@@ -25,10 +66,10 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: [],
   },
-  // Baseline security headers on every route. No full CSP on purpose: the site
-  // relies on inline scripts and a CSP would break them. HSTS in production only (local dev is
-  // plain http); without includeSubDomains, so a subdomain still on http (the old site during the
-  // switch) keeps working.
+  // Baseline security headers on every route. The CSP is Report-Only until it has been tested (see
+  // CSP above): the site relies on inline scripts, so an untested enforced policy could break it.
+  // HSTS in production only (local dev is plain http); without includeSubDomains, so a subdomain
+  // still on http (the old site during the switch) keeps working.
   async headers() {
     return [
       {
@@ -39,6 +80,7 @@ const nextConfig: NextConfig = {
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(self), geolocation=(self), payment=(self \"https://checkout.razorpay.com\" \"https://api.razorpay.com\")" },
           ...(process.env.NODE_ENV === "production" ? [{ key: "Strict-Transport-Security", value: "max-age=31536000" }] : []),
+          { key: "Content-Security-Policy-Report-Only", value: CSP },
         ],
       },
     ];

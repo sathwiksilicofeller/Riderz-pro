@@ -1,0 +1,49 @@
+# systemd unit for riderzpro.com (only if the server doesn't already run the app with pm2).
+#
+# Install (replace /srv/riderzpro and the riderzpro user with the real folder and user):
+#   sudo cp deploy/riderzpro.service /etc/systemd/system/riderzpro.service
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now riderzpro
+#   journalctl -u riderzpro -n 100 --no-pager
+# Then deploy with: RIDERZPRO_SERVICE=riderzpro deploy/redeploy.sh /srv/riderzpro
+#
+# Settings: Next.js reads the app folder's .env itself on start (and on `npm run build`, which
+# bakes in the NEXT_PUBLIC_* values), so .env stays the one place for them. That's why there is no
+# EnvironmentFile= line below: systemd parses quotes, "#" and "$" differently from Next, and a
+# value that systemd sets wins over the one in .env, so loading the file twice can quietly give the
+# app a different value than the build saw. If you do add
+#   EnvironmentFile=/srv/riderzpro/.env
+# keep .env to plain KEY=value lines (no quotes, no "export", no ${VAR}).
+# The .env must be readable by the riderzpro user only: chmod 600, owned by riderzpro.
+
+[Unit]
+Description=Riderzpro (Next.js) on 127.0.0.1:3000
+Documentation=file:///srv/riderzpro/docs/DEPLOY.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=riderzpro
+Group=riderzpro
+WorkingDirectory=/srv/riderzpro
+Environment=NODE_ENV=production
+# Use the full path of the node the build used (`command -v node`; with nvm it is under ~/.nvm).
+# Listening on 127.0.0.1 keeps port 3000 private: only nginx can reach it.
+ExecStart=/usr/bin/node node_modules/next/dist/bin/next start -H 127.0.0.1 -p 3000
+Restart=always
+RestartSec=5
+# Give in-flight requests a moment on stop/restart.
+TimeoutStopSec=20
+KillSignal=SIGTERM
+
+# Hardening that doesn't get in the app's way: it writes only to its own folder (.next/cache).
+# If the app lives under /home, set ReadWritePaths to that folder (ProtectHome makes /home read-only).
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=/srv/riderzpro
+
+[Install]
+WantedBy=multi-user.target

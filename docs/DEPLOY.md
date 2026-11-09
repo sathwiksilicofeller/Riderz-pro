@@ -101,9 +101,24 @@ Rate limits read the visitor's address from `x-vercel-forwarded-for` / `x-real-i
 
 riderzpro.com runs from the `old-deploy` branch on our Ubuntu server behind nginx. Fill in the real
 folder and process name here the first time you run this: `/path/to/riderzpro` and `riderzpro` are
-placeholders, and use whichever of pm2 or systemd the server already uses.
+placeholders, and use whichever of pm2 or systemd the server already uses (a systemd unit to start
+from is in `deploy/riderzpro.service`).
 
-Settings live in a `.env` file in the app folder (`chmod 600`, never committed).
+Settings live in a `.env` file in the app folder (`chmod 600`, never committed). Next.js reads it
+itself, at build and at start, so don't also load it into pm2 or systemd.
+
+**Use the script** (`deploy/redeploy.sh`, see `deploy/README.md`). It does the steps below, refuses to
+run with uncommitted changes, waits up to 60 s for `/api/health` and prints the log lines in the
+table below:
+
+```bash
+cd /path/to/riderzpro
+deploy/redeploy.sh                                # pm2 process "riderzpro"
+RIDERZPRO_SERVICE=riderzpro deploy/redeploy.sh    # systemd unit "riderzpro"
+deploy/redeploy.sh --rollback                     # back to the commit that ran before
+```
+
+By hand (the first time, before `deploy/` is on `old-deploy`, or if the script can't be used):
 
 ```bash
 cd /path/to/riderzpro
@@ -136,13 +151,16 @@ Read the log after every deploy:
 | `[indus] not set up: …` or `[indus] set-up failed: …` | The store was not created. Don't assume it exists. |
 | `[error] …` | A server error. Look into it before calling the deploy done. |
 
-To roll back, run the same steps with `git checkout <hash from ~/riderzpro-last-deploy>` instead of
-the checkout and pull. Migrations only go forward and stay applied, so check a release's new
+To roll back by hand, run the same steps with `git checkout <hash from ~/riderzpro-last-deploy>`
+instead of the checkout and pull. Migrations only go forward and stay applied, so check a release's new
 migrations before rolling back past it. Never reset the live database.
 
 ## 7. nginx
 
-In the site's `server` block (`/etc/nginx/sites-available/riderzpro.com`, or see `sudo nginx -T`):
+The full site file is `deploy/nginx/riderzpro.com.conf` (http → https, certbot certificates, the
+settings below, timeouts, HSTS, gzip). Compare it with the live one (`sudo nginx -T`) before copying
+it to `/etc/nginx/sites-available/riderzpro.com`. The part that matters, if you edit the live file by
+hand instead, in the site's `server` block:
 
 ```nginx
 # Seller uploads go up to 5 MB; nginx's default of 1 MB would refuse them.
@@ -182,7 +200,11 @@ sudo nginx -t && sudo systemctl reload nginx
 We are not on Vercel, so `vercel.json` doesn't schedule this. The job releases unpaid and uncollected
 orders, deletes old rider trails, clears expired sessions and sends the 20:30 IST shop summary.
 
-Keep the secret in a private file, so it stays out of the crontab and the process list:
+**Use the script:** `deploy/cron/install-housekeeping-cron.sh /path/to/riderzpro`. It reads
+`CRON_SECRET` from `.env` without printing it (and stops if it is missing), writes the header file
+below, calls the job once, and adds the crontab line. Re-running it replaces its own line only.
+
+By hand: keep the secret in a private file, so it stays out of the crontab and the process list:
 
 ```bash
 ( umask 077; printf 'Authorization: Bearer %s\n' 'THE_CRON_SECRET' > ~/.riderzpro-cron-header )
@@ -210,3 +232,29 @@ release with online-only checkout goes live**. Without them nobody can place an 
    cancel the test orders.
 3. At go-live, once KYC is approved, switch to the live keys and the live-mode webhook secret, then
    restart.
+
+## 10. Uptime and logs
+
+- **External uptime check.** In UptimeRobot, Better Stack or similar, add an HTTPS monitor on
+  `https://riderzpro.com/api/health` every 5 minutes: 200 = up (the body is `{"ok":true,"db":true}`),
+  503 = the database isn't answering, anything else = the site or nginx is down. Send alerts to at
+  least two people. Use the public address with no secret.
+- **On the server (optional).** `deploy/cron/check-health.sh` does the same check (exit 1 when down);
+  `install-housekeeping-cron.sh --with-health-check` runs it every 5 minutes and logs failures to
+  `~/riderzpro-health.log`. It can't alert when the whole server is down, so keep the external one.
+- **After every deploy**, read the `[config]` and `[error]` lines (section 6 table; `redeploy.sh` prints
+  them). Day to day: `pm2 logs riderzpro --lines 200 --nostream | grep -E '\[(config|error)\]'`, or
+  `journalctl -u riderzpro --since today | grep -E '\[(config|error)\]'`. Also check
+  `~/riderzpro-cron.log` for failed hourly runs.
+
+## 11. Security headers (CSP)
+
+`next.config.ts` sends `Content-Security-Policy-Report-Only`: browsers report what the policy would
+block in the DevTools console but block nothing. Before enforcing it, test with the frontend team on
+staging, with the console open: home, shop, product pages, a Razorpay test payment (card and UPI),
+the rider and customer tracking map, `/locations` (Google Maps), the admin vendor document viewer
+and the shop-screen mic. For each "[Report Only] Refused to …" message, add the host to the matching
+directive in `next.config.ts` (or remove what loads it).
+
+To enforce: rename the header key to `Content-Security-Policy` in `next.config.ts`, rebuild and
+redeploy, then repeat the test. Roll back by renaming it back.
