@@ -1,6 +1,6 @@
 import "server-only";
 
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { sql, transaction, type Query } from "@/lib/db/client";
 import { STORE_CATEGORIES_MAX, STORE_CATEGORY_NAME_MAX, STORE_SUGGEST_MAX, type StoreCategory } from "@/lib/vendor/store-categories";
 import { ApiError } from "./http";
