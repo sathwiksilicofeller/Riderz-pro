@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { guardMutation, ok, rateLimit, readJson, route } from "@/lib/server/http";
 import { requireApprovedRider } from "@/lib/server/riders";
 import { setLocationConsent } from "@/lib/server/tracking";

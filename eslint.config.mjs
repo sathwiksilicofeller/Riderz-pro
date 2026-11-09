@@ -15,5 +15,12 @@ export default defineConfig([
     },
     linterOptions: { reportUnusedDisableDirectives: "error" },
   },
+  {
+    // src/lib/zod.ts keeps zod 3's error messages; importing "zod" directly would skip it.
+    ignores: ["src/lib/zod.ts"],
+    rules: {
+      "no-restricted-imports": ["error", { paths: [{ name: "zod", message: 'Import { z } from "@/lib/zod" instead.' }] }],
+    },
+  },
   globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts", ".data/**", ".claude/**", "public/**"]),
 ]);

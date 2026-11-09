@@ -1,6 +1,6 @@
 import "server-only";
 
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { sql, transaction, type Query, containsPattern } from "@/lib/db/client";
 import { ALL_MODELS } from "@/lib/data/vehicles";
 import { ApiError } from "./http";

@@ -2,7 +2,7 @@ import "server-only";
 
 import fs from "node:fs/promises";
 import path from "node:path";
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { sql, sqlOne } from "@/lib/db/client";
 import { PRODUCT_DETAILS } from "@/lib/store/products";
 import type { ProductDetail } from "@/lib/store/types";

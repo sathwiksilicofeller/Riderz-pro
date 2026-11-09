@@ -2,7 +2,7 @@
  * Live tracking: distances, thresholds and the shapes the tracking APIs return.
  * Client-safe (no server imports), shared by the rider app, the order page, dispatch and the API.
  */
-import { z } from "zod";
+import { z } from "@/lib/zod";
 
 export type LatLng = { lat: number; lng: number };
 

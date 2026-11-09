@@ -6,7 +6,7 @@
  * flat), or the delivery charge (free_shipping). Marketplace sellers' items keep their price.
  * Amounts are integer rupees.
  */
-import { z } from "zod";
+import { z } from "@/lib/zod";
 
 export const COUPON_KINDS = ["percent", "flat", "free_shipping"] as const;
 export type CouponKind = (typeof COUPON_KINDS)[number];

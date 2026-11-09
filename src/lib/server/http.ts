@@ -1,7 +1,7 @@
 import "server-only";
 
 import { NextResponse } from "next/server";
-import type { z } from "zod";
+import type { z } from "@/lib/zod";
 import { DatabaseNotConfigured, sql } from "@/lib/db/client";
 
 /**

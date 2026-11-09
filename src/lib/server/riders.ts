@@ -3,7 +3,7 @@ import "server-only";
 import { randomInt } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { DatabaseNotConfigured, sql, sqlOne, transaction, type Query } from "@/lib/db/client";
 import {
   LIVE_JOB,

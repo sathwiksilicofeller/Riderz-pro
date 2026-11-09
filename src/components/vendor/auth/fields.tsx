@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from "react";
-import type { z } from "zod";
+import type { z } from "@/lib/zod";
 import { AlertCircle } from "lucide-react";
 
 /** Shared form pieces for the seller portal: labelled fields whose errors are announced and linked. */

@@ -9,7 +9,7 @@
  *   finance     payouts, refunds, sellers' bank details, reports, the audit log; orders to look at
  *   support     customers, customer and seller messages; orders to look at
  */
-import { z } from "zod";
+import { z } from "@/lib/zod";
 
 export const ADMIN_ROLES = ["owner", "manager", "operations", "catalog", "finance", "support"] as const;
 export type AdminRole = (typeof ADMIN_ROLES)[number];

@@ -5,7 +5,7 @@
  * The browser keeps the conversation (text only) and sends it with each question; the server
  * re-checks every limit. Products the assistant showed travel back as ids so it can refer to them.
  */
-import { z } from "zod";
+import { z } from "@/lib/zod";
 
 export const ASSISTANT_MAX_TURNS = 12;
 export const ASSISTANT_MAX_CHARS = 600;

@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { z } from "zod";
+import type { z } from "@/lib/zod";
 import { sql, sqlOne, transaction, type Query } from "@/lib/db/client";
 import type { OnboardingState } from "@/components/vendor/onboarding/types";
 import {

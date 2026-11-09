@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { clientIp, guardMutation, ok, rateLimit, readJson, route } from "@/lib/server/http";
 import { CAN_SELL, requireVendor } from "@/lib/server/session";
 import { placeStoreOrder } from "@/lib/server/store-sales";

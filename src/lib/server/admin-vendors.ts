@@ -1,6 +1,6 @@
 import "server-only";
 
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { sql, sqlOne, transaction, type Query, containsPattern } from "@/lib/db/client";
 import { DEPARTMENT_BY_SLUG } from "@/lib/data/taxonomy";
 import { findModelBySlug } from "@/lib/data/vehicles";

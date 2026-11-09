@@ -7,7 +7,7 @@ import { ArrowLeft, Boxes, Eye, EyeOff, Globe, Lock, ShieldCheck, Store } from "
 import { BUSINESS_TYPES, type BusinessType } from "@/lib/vendor/types";
 import { ApiFailure, api } from "@/lib/vendor/client";
 import { passwordSchema, signInSchema, signUpSchema, emailSchema } from "@/lib/vendor/validators";
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { CheckField, Notice, SelectField, TextField, useFocusFirstInvalid, validate, type FieldErrors } from "./fields";
 
 type Mode = "signin" | "signup" | "reset";

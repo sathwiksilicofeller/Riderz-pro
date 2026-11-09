@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { sql, sqlOne } from "@/lib/db/client";
 import { ApiError, clientIp, guardMutation, ok, rateLimit, readJson, route } from "@/lib/server/http";
 import { checkOtp } from "@/lib/server/otp";

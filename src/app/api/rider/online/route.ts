@@ -1,6 +1,6 @@
 import { guardMutation, ok, readJson, route } from "@/lib/server/http";
 import { requireApprovedRider, setOnline } from "@/lib/server/riders";
-import { z } from "zod";
+import { z } from "@/lib/zod";
 
 export const dynamic = "force-dynamic";
 

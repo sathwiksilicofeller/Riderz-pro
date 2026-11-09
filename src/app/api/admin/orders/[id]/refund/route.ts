@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { clientIp, guardMutation, ok, readJson, route } from "@/lib/server/http";
 import { requireAdmin } from "@/lib/server/admin-auth";
 import { adminRefund } from "@/lib/server/payments";

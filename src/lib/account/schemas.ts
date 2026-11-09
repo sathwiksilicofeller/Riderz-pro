@@ -2,7 +2,7 @@
  * Customer account input checks. Shared by the account pages (instant feedback) and the
  * /api/account routes (the check that counts). Client-safe.
  */
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { MEDIA, type MediaKey } from "@/lib/media";
 import { INDIAN_STATES, MOBILE_RE, PINCODE_RE, emailSchema, mobileSchema, normaliseMobile } from "@/lib/vendor/validators";
 
@@ -26,12 +26,12 @@ export const identifierSchema = z
     if (raw.includes("@")) {
       const email = emailSchema.safeParse(raw);
       if (email.success) return { channel: "email", target: email.data };
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Enter a valid email address" });
+      ctx.addIssue({ code: "custom", message: "Enter a valid email address" });
       return z.NEVER;
     }
     const mobile = normaliseMobile(raw);
     if (MOBILE_RE.test(mobile)) return { channel: "mobile", target: mobile };
-    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Enter a 10-digit Indian mobile number or an email" });
+    ctx.addIssue({ code: "custom", message: "Enter a 10-digit Indian mobile number or an email" });
     return z.NEVER;
   });
 
@@ -48,7 +48,7 @@ export const addressSchema = z.object({
   mobile: mobileSchema,
   address: text(5, 240, "Address"),
   city: text(2, 60, "City"),
-  state: z.enum(INDIAN_STATES, { errorMap: () => ({ message: "Pick your state" }) }),
+  state: z.enum(INDIAN_STATES, { error: "Pick your state" }),
   pincode: z.string().trim().regex(PINCODE_RE, "Enter a 6-digit pincode"),
   isDefault: z.boolean(),
 });
@@ -127,7 +127,7 @@ export const ticketSchema = z.object({
     .transform((v) => (v ? v.toUpperCase() : null))
     .refine((v) => v === null || /^RZP-[A-Z0-9]{6}$/.test(v), "Order numbers look like RZP-ABC234"),
   topic: z.enum(TICKET_TOPICS.map((t) => t.value) as [TicketTopic, ...TicketTopic[]], {
-    errorMap: () => ({ message: "Pick what it's about" }),
+    error: "Pick what it's about",
   }),
   body: text(10, 2000, "Message"),
 });

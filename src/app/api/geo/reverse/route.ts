@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { clientIp, guardMutation, ok, rateLimit, readJson, route } from "@/lib/server/http";
 import { reverseGeocode, serviceCityFor } from "@/lib/server/tracking-geo";
 import { latSchema, lngSchema, type DetectedLocation } from "@/lib/tracking/geo";

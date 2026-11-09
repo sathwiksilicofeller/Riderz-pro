@@ -2,7 +2,7 @@
  * Delivery details collected at checkout. Shared by the cart form (instant
  * feedback) and POST /api/orders (the check that counts). Client-safe.
  */
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { INDIAN_STATES, mobileSchema, PINCODE_RE } from "@/lib/vendor/validators";
 import { pointSchema } from "@/lib/tracking/geo";
 import { codeSchema } from "@/lib/coupons/types";
@@ -22,7 +22,7 @@ export const customerSchema = z.object({
     .refine((v) => v === null || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), "Enter a valid email address"),
   address: text(5, 240, "Address"),
   city: text(2, 60, "City"),
-  state: z.enum(INDIAN_STATES, { errorMap: () => ({ message: "Pick your state" }) }),
+  state: z.enum(INDIAN_STATES, { error: "Pick your state" }),
   pincode: z.string().trim().regex(PINCODE_RE, "Enter a 6-digit pincode"),
   notes: z
     .string()

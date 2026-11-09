@@ -2,7 +2,7 @@
  * Rider portal shapes, rules and labels shared by the rider pages, the admin screens and the API.
  * Client-safe.
  */
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { mobileSchema } from "@/lib/vendor/validators";
 
 /* ------------------------------------------------------------ service area */
@@ -63,24 +63,24 @@ const VEHICLE_RE = /^([A-Z]{2}[0-9]{1,2}[A-Z]{0,3}[0-9]{1,4}|[0-9]{2}BH[0-9]{4}[
 export const applySchema = z
   .object({
     name: z.string().trim().min(1, "Name is required").min(3, "Enter your full name").max(80),
-    city: z.enum(SERVICE_CITIES, { errorMap: () => ({ message: "Pick the city you'll ride in" }) }),
-    vehicleType: z.enum(["motorcycle", "scooter", "ev_scooter", "bicycle"], { errorMap: () => ({ message: "Pick your vehicle" }) }),
+    city: z.enum(SERVICE_CITIES, { error: "Pick the city you'll ride in" }),
+    vehicleType: z.enum(["motorcycle", "scooter", "ev_scooter", "bicycle"], { error: "Pick your vehicle" }),
     vehicleNumber: z
       .string()
       .max(20)
       .optional()
       .transform((v) => (v ? normaliseVehicleNumber(v) : null)),
-    confirmAccurate: z.literal(true, { errorMap: () => ({ message: "Please confirm" }) }),
+    confirmAccurate: z.literal(true, { error: "Please confirm" }),
     confirmLicence: z.boolean(),
-    confirmPrivacy: z.literal(true, { errorMap: () => ({ message: "Please confirm" }) }),
+    confirmPrivacy: z.literal(true, { error: "Please confirm" }),
   })
   .superRefine((v, ctx) => {
     if (needsLicence(v.vehicleType)) {
-      if (!v.vehicleNumber) ctx.addIssue({ path: ["vehicleNumber"], code: z.ZodIssueCode.custom, message: "Enter the registration number" });
-      if (!v.confirmLicence) ctx.addIssue({ path: ["confirmLicence"], code: z.ZodIssueCode.custom, message: "Needed for motor vehicles" });
+      if (!v.vehicleNumber) ctx.addIssue({ path: ["vehicleNumber"], code: "custom", message: "Enter the registration number" });
+      if (!v.confirmLicence) ctx.addIssue({ path: ["confirmLicence"], code: "custom", message: "Needed for motor vehicles" });
     }
     if (v.vehicleNumber && !VEHICLE_RE.test(v.vehicleNumber)) {
-      ctx.addIssue({ path: ["vehicleNumber"], code: z.ZodIssueCode.custom, message: "Enter it as on the RC, e.g. DL 3C AB 1234" });
+      ctx.addIssue({ path: ["vehicleNumber"], code: "custom", message: "Enter it as on the RC, e.g. DL 3C AB 1234" });
     }
   });
 export type ApplyInput = z.output<typeof applySchema>;

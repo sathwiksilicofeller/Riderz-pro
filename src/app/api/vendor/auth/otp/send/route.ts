@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { ApiError, guardMutation, ok, rateLimit, readJson, route } from "@/lib/server/http";
 import { requireVendor } from "@/lib/server/session";
 import { sendOtp } from "@/lib/server/otp";

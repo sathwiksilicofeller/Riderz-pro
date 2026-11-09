@@ -1,6 +1,6 @@
 import "server-only";
 
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { sql, sqlOne, transaction } from "@/lib/db/client";
 import type { TicketTopic } from "@/lib/account/schemas";
 import { ApiError } from "./http";
