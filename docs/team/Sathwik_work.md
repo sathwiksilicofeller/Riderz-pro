@@ -44,8 +44,8 @@ email or git.
 - Cancelling a paid order [doesn't refund by itself; the admin page offers the refund].
 - Seller payouts [Riderzpro collects and pays sellers later; Razorpay Route not used].
 - Cash on delivery [not offered; WhatsApp ordering and pay-online are].
-- **Commission on shop-screen sales paid at the seller's counter** [recorded, not charged; Reports
-  shows the amount]: invoice the seller monthly, deduct from online payouts, or none?
+- **Commission on shop-screen sales** [decided: none. Offline Store screen sales, paid on the screen
+  or at the seller's counter, carry no commission; payouts and Reports show none for them].
 - Who may create coupons [Owner, Manager, Catalogue roles].
 
 ## When done

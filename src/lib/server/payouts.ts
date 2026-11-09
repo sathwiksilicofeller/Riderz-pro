@@ -14,7 +14,12 @@ import { audit, notifyVendor } from "./vendors";
  * return window). Until an admin records a bank transfer against it, it has no
  * payout_id. Amounts are always recomputed here from the stored subtotal and the
  * commission rate snapshotted when the order was placed — never taken from a client.
+ * Offline Store screen sales (orders.channel = 'store') carry no commission: until paid out,
+ * their rate is read as 0 whatever is stored (STORE_FREE_RATE).
  */
+
+/** The commission rate to settle at: 0 for an unpaid Offline Store screen sale. Needs `vo` and `o`. */
+const STORE_FREE_RATE = "CASE WHEN o.channel = 'store' AND vo.payout_id IS NULL THEN 0 ELSE vo.commission_rate END AS commission_rate";
 
 const iso = (d: Date | string | null | undefined) => (d ? new Date(d).toISOString() : null);
 
@@ -31,7 +36,7 @@ type SettleRow = {
 
 export async function payoutOverview(vendorId: string): Promise<PayoutOverview> {
   const rows = await sql<SettleRow>(
-    `SELECT vo.id, o.number, vo.subtotal, vo.commission_rate, vo.delivered_at, vo.payout_id, p.reference,
+    `SELECT vo.id, o.number, vo.subtotal, ${STORE_FREE_RATE}, vo.delivered_at, vo.payout_id, p.reference,
             (vo.delivered_at <= now() - make_interval(days => $2)) AS due
        FROM vendor_orders vo JOIN orders o ON o.id = vo.order_id
        LEFT JOIN vendor_payouts p ON p.id = vo.payout_id
@@ -110,7 +115,7 @@ export async function dueVendors(): Promise<DueVendor[]> {
     bank_account_last4: string | null;
     bank_ifsc: string | null;
   }>(
-    `SELECT vo.id AS vendor_order_id, vo.vendor_id, v.store_name, o.number, vo.subtotal, vo.commission_rate, vo.delivered_at,
+    `SELECT vo.id AS vendor_order_id, vo.vendor_id, v.store_name, o.number, vo.subtotal, ${STORE_FREE_RATE}, vo.delivered_at,
             s.bank_holder, s.bank_account_last4, s.bank_ifsc
        FROM vendor_orders vo
        JOIN orders o ON o.id = vo.order_id
@@ -152,10 +157,11 @@ export async function recordPayout(
   const ids = [...new Set(input.vendorOrderIds)];
   const result = await transaction(async (q) => {
     const rows = await q<{ id: string; subtotal: number; commission_rate: string }>(
-      `SELECT id, subtotal, commission_rate FROM vendor_orders
-        WHERE id = ANY($1) AND vendor_id = $2 AND status = 'delivered' AND payout_id IS NULL AND collected_by = 'platform'
-          AND delivered_at <= now() - make_interval(days => $3)
-        FOR UPDATE`,
+      `SELECT vo.id, vo.subtotal, ${STORE_FREE_RATE}
+         FROM vendor_orders vo JOIN orders o ON o.id = vo.order_id
+        WHERE vo.id = ANY($1) AND vo.vendor_id = $2 AND vo.status = 'delivered' AND vo.payout_id IS NULL AND vo.collected_by = 'platform'
+          AND vo.delivered_at <= now() - make_interval(days => $3)
+        FOR UPDATE OF vo`,
       [ids, input.vendorId, SETTLEMENT_DELAY_DAYS],
     );
     if (rows.length !== ids.length) {

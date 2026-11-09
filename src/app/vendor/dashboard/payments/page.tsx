@@ -14,8 +14,8 @@ export default async function VendorPaymentsPage() {
       <div>
         <h1 className="display-3">PAYMENTS</h1>
         <p className="mt-2 max-w-2xl text-sm text-ash">
-          You earn the order value less Riderzpro&apos;s commission and the 18% GST on that commission. Money becomes
-          payable {data.delayDays} days after delivery and is sent to your bank account by Riderzpro.
+          On online orders you earn the order value less Riderzpro&apos;s commission and the 18% GST on that commission.
+          Sales from your Offline Store screen carry no commission. Money becomes payable {data.delayDays} days after delivery and is sent to your bank account by Riderzpro.
         </p>
       </div>
       <PaymentsView data={data} />

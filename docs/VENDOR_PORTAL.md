@@ -66,6 +66,9 @@ browser and had demo passwords and OTPs; none of its plumbing is used here.
    to an admin who presses "Reveal", which is audited.
 8. **Money** is integer rupees, GST inclusive. Settlement per delivered vendor order:
    `settlementFor(subtotal, commissionRate)` (commission, 18% GST on commission, net).
+   Online orders carry commission. Offline Store screen sales (`orders.channel = 'store'`) carry
+   none: they save a 0% rate, and payouts and Reports read an unpaid one as 0% whatever is stored
+   (migration `019_store_sales_no_commission` zeroed older unpaid ones).
 9. **Dealer prices** (`dp` in the RECOIL/Autoform data) remain server-only exactly as
    before; nothing in the vendor portal may import the house catalogue internals into a
    client component.

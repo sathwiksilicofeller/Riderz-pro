@@ -1015,4 +1015,15 @@ UPDATE order_items i SET hsn = p.hsn, gst_rate = p.gst_rate, warranty_months = p
  WHERE i.product_kind = 'vendor' AND p.id = i.product_ref;
 `,
   },
+  {
+    // No commission on Offline Store screen sales. New screen sales already save 0%; this zeroes the
+    // rate on older screen sales not yet paid out. vendor_orders stores only the rate (commission,
+    // GST and net are worked out from it), so nothing else changes. Rows already paid out keep theirs.
+    id: "019_store_sales_no_commission",
+    sql: `
+UPDATE vendor_orders vo SET commission_rate = 0, updated_at = now()
+  FROM orders o
+ WHERE o.id = vo.order_id AND o.channel = 'store' AND vo.payout_id IS NULL AND vo.commission_rate <> 0;
+`,
+  },
 ];

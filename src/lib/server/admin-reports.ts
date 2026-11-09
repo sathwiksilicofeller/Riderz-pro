@@ -124,8 +124,8 @@ export type SalesReport = {
   range: ReportRange;
   orders: { placed: number; cancelled: number; byStatus: Record<string, number>; byMethod: Record<string, number> };
   sales: { total: number; items: number; shipping: number; discounts: number; couponDiscounts: number; shopDiscounts: number; average: number; ownItems: number; marketplaceItems: number };
-  /** Parts delivered in the range. `counter*`: paid at the seller's own counter (the seller has the money). */
-  marketplace: { gross: number; deliveredGross: number; commission: number; commissionGst: number; counterGross: number; counterCommission: number; sellers: number };
+  /** Parts delivered in the range. `counterGross`: paid at the seller's own counter (the seller has the money; no commission). */
+  marketplace: { gross: number; deliveredGross: number; commission: number; commissionGst: number; counterGross: number; sellers: number };
   online: { paid: number; paidOrders: number; refunded: number };
   riders: { delivered: number; earnings: number };
   coupons: { orders: number; given: number };
@@ -160,7 +160,10 @@ export async function salesReport(range: ReportRange): Promise<SalesReport> {
       p,
     ),
     sql<{ subtotal: number; commission_rate: string; collected_by: "platform" | "seller" }>(
-      "SELECT subtotal, commission_rate, collected_by FROM vendor_orders WHERE status = 'delivered' AND delivered_at BETWEEN $1 AND $2",
+      // No commission on Offline Store screen sales (unless already paid out at an older rate).
+      `SELECT vo.subtotal, CASE WHEN o.channel = 'store' AND vo.payout_id IS NULL THEN 0 ELSE vo.commission_rate END AS commission_rate, vo.collected_by
+         FROM vendor_orders vo JOIN orders o ON o.id = vo.order_id
+        WHERE vo.status = 'delivered' AND vo.delivered_at BETWEEN $1 AND $2`,
       p,
     ),
     sqlOne<{ paise: string; n: number }>(
@@ -198,7 +201,7 @@ export async function salesReport(range: ReportRange): Promise<SalesReport> {
 
   const byStatus = Object.fromEntries(status.map((r) => [r.status, r.n]));
   const settled = delivered.filter((d) => d.collected_by === "platform").map((d) => settlementFor(d.subtotal, Number(d.commission_rate)));
-  const counter = delivered.filter((d) => d.collected_by === "seller").map((d) => settlementFor(d.subtotal, Number(d.commission_rate)));
+  const counterGross = delivered.filter((d) => d.collected_by === "seller").reduce((n, d) => n + d.subtotal, 0);
   const total = sums?.total ?? 0;
   const placed = sums?.n ?? 0;
   const marketplaceGross = parts?.gross ?? 0;
@@ -221,8 +224,7 @@ export async function salesReport(range: ReportRange): Promise<SalesReport> {
       deliveredGross: settled.reduce((n, s) => n + s.gross, 0),
       commission: settled.reduce((n, s) => n + s.commission, 0),
       commissionGst: settled.reduce((n, s) => n + s.commissionGst, 0),
-      counterGross: counter.reduce((n, s) => n + s.gross, 0),
-      counterCommission: counter.reduce((n, s) => n + s.commission, 0),
+      counterGross,
       sellers: parts?.sellers ?? 0,
     },
     online: { paid: Math.round(Number(online?.paise ?? 0) / 100), paidOrders: online?.n ?? 0, refunded: Math.round(Number(refunds?.paise ?? 0) / 100) },
