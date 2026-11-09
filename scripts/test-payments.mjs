@@ -133,10 +133,9 @@ const mockServer = http.createServer(async (req, res) => {
 let server = null;
 async function startServer(withKeys) {
   const env = { ...process.env, NODE_ENV: "development", PORT: String(PORT) };
-  delete env.RAZORPAY_KEY_ID;
-  delete env.RAZORPAY_KEY_SECRET;
-  delete env.RAZORPAY_WEBHOOK_SECRET;
-  delete env.RAZORPAY_API_BASE;
+  // Empty, not deleted: Next fills in missing variables from .env.local, which may hold real
+  // (test) keys; a variable already set, even to "", is left alone, so "no keys" really means none.
+  for (const k of ["RAZORPAY_KEY_ID", "RAZORPAY_KEY_SECRET", "RAZORPAY_WEBHOOK_SECRET", "RAZORPAY_API_BASE"]) env[k] = "";
   if (withKeys) {
     Object.assign(env, {
       RAZORPAY_KEY_ID: KEY_ID,

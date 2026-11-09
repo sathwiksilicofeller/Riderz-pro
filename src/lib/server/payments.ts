@@ -665,7 +665,7 @@ export async function customerOrderPayment(customerId: string, number: string): 
   let label: string;
   if (o.payment_method !== "online") {
     label =
-      o.payment_status === "paid" ? "Paid" : o.payment_method === "counter" ? "Pay at the shop counter" : "Payment arranged on WhatsApp";
+      o.payment_status === "paid" ? "Paid" : o.payment_method === "counter" ? "Pay at the shop counter" : "Old WhatsApp order: payment arranged outside the site";
   } else if (o.payment_status === "paid") {
     label = o.paid_at ? `Paid online on ${dayFmt.format(new Date(o.paid_at))}` : "Paid online";
   } else if (o.payment_status === "refunded") {
