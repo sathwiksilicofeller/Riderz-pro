@@ -77,3 +77,22 @@ New shop-screen sales save a 0% rate, but three things remain:
   confirmed and tracked on WhatsApp. Only the "How to pay" section is fixed here. The rest should go
   live with or soon after this branch.
 - **Whoever owns the task list:** it points to `docs/GO_LIVE.md`, which isn't on `main` or `old-deploy`.
+
+## Update 9 Nov 2026
+
+Done on this branch since 6 Nov:
+
+- **#7 Razorpay test keys checked** against the Razorpay test account from a local run: real test orders
+  are created; signed webhooks and the client check mark orders paid; bad signatures are refused;
+  repeated events are ignored; a refused refund returns a clean error. Still to do on the server: keys
+  in `.env`, the webhook in the Razorpay dashboard (`DEPLOY.md` §9), a real test-card/UPI payment and a
+  ₹1 refund (#8), KYC, then live keys.
+- **#10 No commission on shop-screen sales: done.** Migration `019_store_sales_no_commission` zeroes the
+  rate on older screen sales not yet paid out (run the count query above before deploying). Payouts
+  and Reports read unpaid screen sales as 0%. Reports and the seller Payments page say so.
+- **#2, #4, #5, #11: scripts and config in `deploy/`** (redeploy with rollback, nginx, systemd, hourly
+  job installer, health check). `DEPLOY.md` §10 covers uptime and logs.
+- **#12:** CSP added as **Report-Only** (`next.config.ts`, `DEPLOY.md` §11): test with the frontend team,
+  then enforce. `chore/zod-4` merged here and tested (lint, typecheck, build, 29 payment checks).
+- Customer policies/FAQ, admin PaymentCard and Reports no longer say orders go through WhatsApp.
+- `docs/GO_LIVE.md` now exists.
