@@ -29,8 +29,12 @@ export function PaymentCard({ orderId, summary }: { orderId: string; summary: Ad
         </span>
       </div>
 
-      {s.method !== "online" ? (
-        <p className="text-xs text-ash">Payment is arranged with the customer on WhatsApp and isn&apos;t tracked here.</p>
+      {s.method === "counter" ? (
+        <p className="text-xs text-ash">Shop screen order, paid at the seller&apos;s counter. The seller collects the money, so it isn&apos;t tracked here.</p>
+      ) : s.method !== "online" ? (
+        <p className="text-xs text-ash">
+          Placed before checkout went online only. Payment was arranged with the customer outside the site and isn&apos;t tracked here.
+        </p>
       ) : (
         <>
           {s.paidAfterCancel && (

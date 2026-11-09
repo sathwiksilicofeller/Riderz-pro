@@ -5,7 +5,7 @@ import { Icon } from "@/components/ui/Icon";
 import { findModelBySlug } from "@/lib/data/vehicles";
 import { whatsapp } from "@/lib/data/site";
 
-/** Fitment as the data states it: universal, a model list, or "confirmed on WhatsApp". */
+/** Fitment as the data states it: universal, a model list, or none (ask us before ordering). */
 export function FitsYourCar({ fitment, title, code }: { fitment: string[]; title: string; code: string | null }) {
   const garage = useGarage();
 
@@ -27,7 +27,7 @@ export function FitsYourCar({ fitment, title, code }: { fitment: string[]; title
 
       {fitment.length === 0 ? (
         <p className="mt-2 text-sm text-ash">
-          Fitment for this product is confirmed on WhatsApp before we dispatch it.{" "}
+          No fitment list for this product yet, so check your car with us before you order.{" "}
           <a href={ask} target="_blank" rel="noopener noreferrer" className={link}>
             Check your car
           </a>

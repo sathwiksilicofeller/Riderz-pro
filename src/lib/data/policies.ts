@@ -36,7 +36,7 @@ export const SUPPORT_POLICIES: Policy[] = [
         heading: "Dispatch times",
         body: [
           "In-stock items ordered before 2 PM on a working day are dispatched the same day. Everything else leaves within 48 hours.",
-          "Made-to-order items — seat covers, painted spoilers, custom audio enclosures — carry the lead time shown on the product page. We confirm the date on WhatsApp when the order is placed. They follow the made-to-order terms on the Returns page.",
+          "Made-to-order items — seat covers, painted spoilers, custom audio enclosures — carry the lead time shown on the product page. We confirm the date with you after the order is placed. They follow the made-to-order terms on the Returns page.",
         ],
       },
       {
@@ -59,9 +59,10 @@ export const SUPPORT_POLICIES: Policy[] = [
         id: "tracking",
         heading: "Order tracking",
         body: [
-          "You receive a tracking link on WhatsApp the moment the consignment is picked up, and again when it is out for delivery. Orders are confirmed on WhatsApp today, so that is also where updates reach you.",
+          "When your payment goes through, we email and text you the order confirmation with a link to My orders. Sign in with the mobile number you ordered with to see it there.",
+          "My orders shows each seller's progress, the courier and tracking number once a part is dispatched, and the rider's live location when one of our riders delivers it. We text you when the rider is close.",
           "If a consignment stalls for more than 48 hours, we chase the carrier ourselves rather than asking you to.",
-          "Not sure where your order is? Use the Track your order page and we will pick it up on WhatsApp.",
+          "Not sure where your order is? Open it in My orders and send us a message, or use the Track your order page.",
         ],
       },
       {
@@ -69,7 +70,7 @@ export const SUPPORT_POLICIES: Policy[] = [
         heading: "Damaged or missing items",
         body: [
           "Record a short video while opening any package that arrives visibly damaged. Send it to us within 48 hours and we ship a replacement immediately — no investigation, no arguing with the courier on your time.",
-          "If something is missing from your parcel, message us on WhatsApp with your order number and a photo of what arrived, and we will confirm the next step with you there.",
+          "If something is missing from your parcel, open the order in My orders and send us a message with a photo of what arrived. We reply with the next step.",
         ],
       },
     ],
@@ -108,7 +109,7 @@ export const SUPPORT_POLICIES: Policy[] = [
         id: "start-a-return",
         heading: "How to start a return",
         body: [
-          "Message us on WhatsApp with your order number and a photo. We arrange reverse pickup in most pin codes within 72 hours.",
+          "Open the order in My orders and send us a message with a photo. We arrange reverse pickup in most pin codes within 72 hours.",
         ],
       },
       {
@@ -122,7 +123,7 @@ export const SUPPORT_POLICIES: Policy[] = [
         id: "cancellations",
         heading: "Cancellations",
         body: [
-          "Orders can be cancelled free of charge until they are dispatched. Message us on WhatsApp with your order number.",
+          "Orders can be cancelled free of charge until they are dispatched. Open the order in My orders and send us a message, and we refund an online payment to the original payment method.",
           "Made-to-order items can be cancelled until production starts — usually within 24 hours of ordering.",
         ],
       },
@@ -335,7 +336,7 @@ export const LEGAL_POLICIES: Policy[] = [
         id: "orders-and-prices",
         heading: "Orders, prices and estimates",
         body: [
-          "Prices shown online include GST unless stated otherwise. Orders are confirmed with you on WhatsApp before dispatch. Build configurator totals are estimates: they become binding only in a written quote issued after a fitment check.",
+          "Prices shown online include GST unless stated otherwise. An order is confirmed once its online payment goes through. Build configurator totals are estimates: they become binding only in a written quote issued after a fitment check.",
           "We honour a written quote for 15 days. Where a part price moves because of an import duty or exchange rate change, we tell you before proceeding and you may cancel free of charge.",
         ],
       },

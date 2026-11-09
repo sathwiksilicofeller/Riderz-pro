@@ -24,13 +24,13 @@ export const FAQ_GROUPS: FaqGroup[] = [
     items: [
       {
         q: "How do I place an order?",
-        a: "Add products to your cart, fill in your delivery details, then choose Pay online, or Confirm order on WhatsApp, where we check fitment against your variant and confirm the total before anything is dispatched.",
+        a: "Add products to your cart, fill in your delivery details and pay online with Razorpay. Your order is confirmed as soon as the payment goes through, and we email and text you the confirmation.",
         href: "/support/payments#how-to-pay",
         hrefLabel: "How to pay",
       },
       {
         q: "Can I cancel an order?",
-        a: "Yes, free of charge until it is dispatched. Made-to-order items can be cancelled until production starts, usually within 24 hours of ordering. Message us on WhatsApp with your order number.",
+        a: "Yes, free of charge until it is dispatched. Made-to-order items can be cancelled until production starts, usually within 24 hours of ordering. Open the order in My orders and send us a message.",
         href: "/support/returns#cancellations",
         hrefLabel: "Cancellations",
       },
@@ -48,7 +48,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
     items: [
       {
         q: "How do I know a part will fit my car?",
-        a: "Save your car on the site and we show what fits it. We also confirm fitment against your variant and year on WhatsApp before dispatch. Where a product page says fitment is confirmed on WhatsApp, we check it with you first.",
+        a: "Save your car on the site and each product page shows whether it is listed for it. If your car isn't listed, or the page has no fitment list, ask us before you order and we check it against your variant and year.",
         href: "/support/returns#fitment-guarantee",
         hrefLabel: "Fitment guarantee",
       },
@@ -78,7 +78,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
       },
       {
         q: "How do I track my order?",
-        a: "We send a tracking link on WhatsApp when the consignment is picked up and again when it is out for delivery. If you cannot find it, use the Track your order page and we will follow up on WhatsApp.",
+        a: "Sign in with the mobile number you ordered with and open the order in My orders. It shows each seller's progress, the courier and tracking number once a part is dispatched, and the rider's live location when one of our riders delivers it. The confirmation email and SMS link to it.",
         href: "/track-order",
         hrefLabel: "Track your order",
       },
@@ -102,7 +102,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
       },
       {
         q: "How do I start a return, and when do I get my refund?",
-        a: "Message us on WhatsApp with your order number and a photo. We arrange reverse pickup in most pin codes within 72 hours, and refund to the original payment method within 5 working days of the item reaching us.",
+        a: "Open the order in My orders and send us a message with a photo. We arrange reverse pickup in most pin codes within 72 hours, and refund to the original payment method within 5 working days of the item reaching us.",
         href: "/support/returns#start-a-return",
         hrefLabel: "How to start a return",
       },
@@ -150,7 +150,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
     items: [
       {
         q: "How do I pay?",
-        a: "Pay online at checkout with Razorpay, or confirm your order on WhatsApp and we tell you how to pay there.",
+        a: "Online at checkout with Razorpay. Your order is confirmed as soon as the payment goes through.",
         href: "/support/payments#how-to-pay",
         hrefLabel: "How to pay",
       },

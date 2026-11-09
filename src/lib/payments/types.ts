@@ -10,9 +10,13 @@ export type PaymentMethod = "whatsapp" | "cod" | "online" | "counter";
 export type PaymentStatus = "pending" | "paid" | "failed" | "refunded" | "partially_refunded";
 export type RefundStatus = "requested" | "pending" | "processed" | "failed";
 
+/**
+ * New website orders are online only and shop screen orders are "online" or "counter".
+ * "whatsapp" and "cod" stay so orders placed before that still read correctly.
+ */
 export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
-  whatsapp: "WhatsApp order",
-  cod: "Cash on delivery",
+  whatsapp: "Old WhatsApp order",
+  cod: "Cash on delivery (old order)",
   online: "Paid online",
   counter: "Pay at the shop counter",
 };

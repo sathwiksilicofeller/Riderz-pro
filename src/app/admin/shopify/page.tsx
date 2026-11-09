@@ -39,7 +39,7 @@ export default async function ShopifyAdminPage() {
               {cfg ? "Configured" : "Not configured"}
             </p>
             <p className="mt-1 text-xs text-ash">
-              {cfg ? `${cfg.domain} · API ${cfg.apiVersion}` : "Checkout runs on WhatsApp."}
+              {cfg ? `${cfg.domain} · API ${cfg.apiVersion}` : "Checkout runs on the site, paid online with Razorpay."}
             </p>
           </div>
           <div className="card p-5">

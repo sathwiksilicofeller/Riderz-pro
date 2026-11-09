@@ -78,7 +78,13 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
           <Stat
             label="Payment method"
             value={`${r.orders.byMethod.online ?? 0} online`}
-            note={`${r.orders.byMethod.whatsapp ?? 0} WhatsApp${r.orders.byMethod.cod ? ` · ${r.orders.byMethod.cod} cash` : ""}`}
+            note={[
+              r.orders.byMethod.counter ? `${r.orders.byMethod.counter} at shop counters` : "",
+              r.orders.byMethod.whatsapp ? `${r.orders.byMethod.whatsapp} old WhatsApp order${r.orders.byMethod.whatsapp === 1 ? "" : "s"}` : "",
+              r.orders.byMethod.cod ? `${r.orders.byMethod.cod} old cash on delivery` : "",
+            ]
+              .filter(Boolean)
+              .join(" · ") || undefined}
           />
         </div>
 
@@ -92,7 +98,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
         {r.marketplace.counterGross > 0 && (
           <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <Stat label="Paid at sellers' counters" value={rupees(r.marketplace.counterGross)} note="shop screen orders; the seller has the money" />
-            <Stat label="Commission on counter sales" value={rupees(r.marketplace.counterCommission)} note="not collected yet: billing rule to be decided" />
+            <Stat label="Commission on counter sales" value="None" note="no commission on Offline Store screen sales" />
           </div>
         )}
 

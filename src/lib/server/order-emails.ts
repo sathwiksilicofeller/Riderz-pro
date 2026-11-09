@@ -10,7 +10,7 @@ import { env, sendEmail, sendOnce, sendTemplateSms, type SendResult } from "./me
  * ORDER CONFIRMATION (email + SMS)
  *
  * `onOrderConfirmedMessages(orderId)` is the one call to make once an order is confirmed: paid online
- * (Razorpay webhook / signature check) or accepted as WhatsApp / cash on delivery. It issues the
+ * (Razorpay webhook / signature check), or an old WhatsApp / cash on delivery order an admin confirms. It issues the
  * Riderzpro tax invoice, then emails and texts the customer, each once per order (message_log).
  * It never throws: messages must not undo an order.
  */
